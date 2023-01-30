@@ -1,4 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Main from "./components/main";
 
 const App: FC = () => {
   const [account, setAccount] = useState<string>("");
@@ -25,7 +27,14 @@ const App: FC = () => {
   useEffect(() => {
     console.log(account);
   }, [account]);
-  return <div>{account ? account : "connect wallet"}</div>;
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Main account={account} />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
