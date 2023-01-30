@@ -1,3 +1,4 @@
+import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 
 const mintAnimalTokenAbi: AbiItem[] = [
@@ -421,3 +422,6 @@ const mintAnimalTokenAbi: AbiItem[] = [
 ];
 
 const mintAnimalTokenAddress = "0x363B0f24725CDEDdCc3F627420550e58b6624180";
+
+export const web3 = new Web3(window.ethereum);
+export const mintAnimalTokenContract = new web3.eth.Contract(mintAnimalTokenAbi, mintAnimalTokenAddress);
