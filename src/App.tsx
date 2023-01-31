@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Main from "./components/main";
+import Main from "./Routes/main";
 
 const App: FC = () => {
   const [account, setAccount] = useState<string>("");
