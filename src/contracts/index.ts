@@ -420,8 +420,136 @@ const mintAnimalTokenAbi: AbiItem[] = [
     type: "function",
   },
 ];
+const saleAnimalTokenAbi: AbiItem[] = [
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_animalTokenId",
+        type: "uint256",
+      },
+    ],
+    name: "purchaseAnimalToken",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_animalTokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_price",
+        type: "uint256",
+      },
+    ],
+    name: "setForSaleAnimalToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_mintAnimalTokenAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "animalTokenPrices",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_animalTokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getAnimalTokenPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getOnSaleAnimalTokenArrayLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "mintAnimalTokenAddress",
+    outputs: [
+      {
+        internalType: "contract MintAnimalToken",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "onSaleAnimalTokenArray",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
-const mintAnimalTokenAddress = "0x363B0f24725CDEDdCc3F627420550e58b6624180";
-
+const mintAnimalTokenAddress = "0xc0FEf5DA9a8e15737cDdad598270A4fBEd055E41";
+export const saleAnimalTokenAddress = "0xF32cBad4833d69Da9FE165831a46434080b6Ab9C";
 export const web3 = new Web3(window.ethereum);
 export const mintAnimalTokenContract = new web3.eth.Contract(mintAnimalTokenAbi, mintAnimalTokenAddress);
+export const saleAnimalTokenContract = new web3.eth.Contract(saleAnimalTokenAbi, saleAnimalTokenAddress);
