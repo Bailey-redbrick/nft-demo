@@ -12,7 +12,9 @@ export interface AnimalInfo {
 
 const index: FC<MainProps> = ({ account }) => {
   const [animalCardArray, setAnimalCardArray] = useState<AnimalInfo[]>();
+  const [saleCard, setSaleCard] = useState<AnimalInfo[]>();
   const [saleStatus, setSaleStatus] = useState<boolean>();
+  const [isBuyable, setIsBuyable] = useState<boolean>();
   const web3 = new Web3();
 
   const getAnimalTokens = async () => {
@@ -65,10 +67,10 @@ const index: FC<MainProps> = ({ account }) => {
   const setPrice = async () => {
     console.log("setPrice");
     const testNFT: AnimalInfo | null = animalCardArray ? animalCardArray[0] : null;
-    const sellPrice = "1.1";
-    console.log(testNFT, sellPrice);
+    const sellPrice = "1.3";
     try {
       if (!account || !saleStatus) return;
+      console.log(testNFT, sellPrice, account);
 
       const response = await saleAnimalTokenContract.methods.setForSaleAnimalToken(testNFT && testNFT.animalTokenId, web3.utils.toWei(sellPrice, "ether")).send({ from: account });
       console.log("setPrice", response);
@@ -77,6 +79,42 @@ const index: FC<MainProps> = ({ account }) => {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const getOnSaleAnimalTokens = async () => {
+    try {
+      const onSaleAnimalTokenArrayLength = await saleAnimalTokenContract.methods.getOnSaleAnimalTokenArrayLength().call();
+
+      const tempOnSaleArray = [];
+
+      for (let i = 0; i < parseInt(onSaleAnimalTokenArrayLength, 10); i++) {
+        const animalTokenId = await saleAnimalTokenContract.methods.onSaleAnimalTokenArray(i).call();
+        const animalType = await mintAnimalTokenContract.methods.animalTypes(animalTokenId).call();
+        const animalPrice = await saleAnimalTokenContract.methods.animalTokenPrices(animalTokenId).call();
+
+        tempOnSaleArray.push({ animalTokenId, animalType, animalPrice });
+        setSaleCard(tempOnSaleArray);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const getAnimalTokenOwnder = async () => {
+    try {
+      const response = await mintAnimalTokenContract.methods.ownerOf(saleCard && saleCard[0]?.animalTokenId).call();
+
+      setIsBuyable(response.toLocaleLowerCase() !== account.toLocaleLowerCase());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onClickBuy = async () => {
+    if (!account) return;
+    const response = await saleAnimalTokenContract.methods.purchaseAnimalToken(saleCard && saleCard[0]?.animalTokenId).send({ from: account, value: saleCard && saleCard[0]?.animalPrice });
+    if (response.status) {
+      // error
     }
   };
 
@@ -94,10 +132,15 @@ const index: FC<MainProps> = ({ account }) => {
     console.log("saleStatus", saleStatus);
   }, [saleStatus]);
 
+  useEffect(() => {
+    console.log(saleCard);
+  }, saleCard);
+
   return (
     <div>
       <button onClick={onClickApproveToggle}>{saleStatus ? "for sale" : "not for sale"}</button>
       <button onClick={setPrice}>set price</button>
+      <button onClick={getOnSaleAnimalTokens}>getOnSaleAnimalTokens</button>
       {/* {animalCardArray?.map((cardNum) => (
         <li>
           <img src={nftImage(cardNum)}></img>
