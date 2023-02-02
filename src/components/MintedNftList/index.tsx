@@ -1,11 +1,19 @@
 import React, { FC, useEffect, useState } from "react";
+import Web3 from "web3";
 import { mintAnimalTokenContract, saleAnimalTokenAddress, saleAnimalTokenContract } from "../../contracts";
 import { MainProps } from "../../Routes/main";
 import { nftImage } from "../AnimalCard";
 
+export interface AnimalInfo {
+  animalTokenId: string;
+  animalType: string;
+  animalPrice: string;
+}
+
 const index: FC<MainProps> = ({ account }) => {
-  const [animalCardArray, setAnimalCardArray] = useState<string[]>();
+  const [animalCardArray, setAnimalCardArray] = useState<AnimalInfo[]>();
   const [saleStatus, setSaleStatus] = useState<boolean>();
+  const web3 = new Web3();
 
   const getAnimalTokens = async () => {
     try {
@@ -18,7 +26,8 @@ const index: FC<MainProps> = ({ account }) => {
 
         const animalType = await mintAnimalTokenContract.methods.animalTypes(animalTokenId).call();
 
-        tempAnimalCardArray.push(animalType);
+        const animalPrice = await saleAnimalTokenContract.methods.animalTokenPrices(animalTokenId).call();
+        tempAnimalCardArray.push({ animalTokenId, animalType, animalPrice });
       }
 
       setAnimalCardArray(tempAnimalCardArray);
@@ -53,6 +62,24 @@ const index: FC<MainProps> = ({ account }) => {
     }
   };
 
+  const setPrice = async () => {
+    console.log("setPrice");
+    const testNFT: AnimalInfo | null = animalCardArray ? animalCardArray[0] : null;
+    const sellPrice = "1.1";
+    console.log(testNFT, sellPrice);
+    try {
+      if (!account || !saleStatus) return;
+
+      const response = await saleAnimalTokenContract.methods.setForSaleAnimalToken(testNFT && testNFT.animalTokenId, web3.utils.toWei(sellPrice, "ether")).send({ from: account });
+      console.log("setPrice", response);
+      if (response.status) {
+        getAnimalTokens();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (!account) return;
     getAnimalTokens();
@@ -60,7 +87,7 @@ const index: FC<MainProps> = ({ account }) => {
   }, [account]);
 
   useEffect(() => {
-    console.log(animalCardArray);
+    console.log("animalCardArray:", animalCardArray);
   }, [animalCardArray]);
 
   useEffect(() => {
@@ -70,6 +97,7 @@ const index: FC<MainProps> = ({ account }) => {
   return (
     <div>
       <button onClick={onClickApproveToggle}>{saleStatus ? "for sale" : "not for sale"}</button>
+      <button onClick={setPrice}>set price</button>
       {/* {animalCardArray?.map((cardNum) => (
         <li>
           <img src={nftImage(cardNum)}></img>

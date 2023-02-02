@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { mintAnimalTokenContract } from "../contracts";
+import { mintAnimalTokenContract, saleAnimalTokenContract } from "../contracts";
 import AnimalCard from "../components/AnimalCard";
 import MintedNFTList from "../components/MintedNftList";
 
@@ -9,7 +9,7 @@ export interface MainProps {
 
 const Main: FC<MainProps> = ({ account }) => {
   const [newAnimalType, setNewAnimalType] = useState<string>();
-
+  const tempAnimalCardArray: object[] = [];
   const onClickMint = async () => {
     console.log(account);
     try {
@@ -25,8 +25,11 @@ const Main: FC<MainProps> = ({ account }) => {
         //get the most recent account's token by index
         const animalType = await mintAnimalTokenContract.methods.animalTypes(animalTokenId).call();
         //get animalType of the token
+
+        const animalPrice = await saleAnimalTokenContract.methods.animalTokenPrices(animalTokenId).call();
+        tempAnimalCardArray.push({ animalTokenId, animalType, animalPrice });
         setNewAnimalType(animalType);
-        console.log(balanceLength, animalTokenId, animalType);
+        console.log(balanceLength, animalTokenId, animalType, tempAnimalCardArray);
       }
     } catch (err) {
       console.error(err);
